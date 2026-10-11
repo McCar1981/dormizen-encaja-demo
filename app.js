@@ -59,14 +59,14 @@ function renderProducts(){
   const list = currentFilter === "all" ? products : products.filter((p) => p.category === currentFilter);
   $("#catalog-grid").innerHTML = list.map((p) => {
     const caveat = p.category === "colchones"
-      ? "Foto de ambiente/cama publicada en dormizen.com. Nombre, opciones y precio simulados; no identifican el colchón fotografiado."
-      : "Foto publicada en dormizen.com. Nombre, opciones y precio simulados; no identifican el artículo fotografiado.";
+      ? "Foto oficial de ambiente. El colchón, sus opciones y su precio son ficticios."
+      : "Foto oficial de referencia. El producto, sus opciones y su precio son ficticios.";
     const viewerLink = p.category === "sofas"
       ? '<button type="button" class="product-viewer-link" data-open-viewer="sofa">Explorar un sofá 3D de muestra ↗</button>'
       : p.category === "relax"
         ? '<button type="button" class="product-viewer-link" data-open-viewer="chair">Explorar un sillón 3D de muestra ↗</button>'
         : "";
-    return '<article class="product-card"><div class="product-image"><div class="' + artClass(p) + '" role="img" aria-label="Fotografía de referencia de DormiZen; no corresponde al artículo ni al precio de ejemplo"></div><span class="product-label">' + p.badge + '</span><span class="photo-label">FOTO REAL · NO ES EL PRODUCTO NI PRECIO MOSTRADOS</span></div>' +
+    return '<article class="product-card"><div class="product-image"><div class="' + artClass(p) + '" role="img" aria-label="Fotografía de referencia de DormiZen; no corresponde al artículo ni al precio de ejemplo"></div><span class="product-label">' + p.badge + '</span><span class="photo-label">FOTO OFICIAL · REFERENCIA DE CATEGORÍA</span></div>' +
       '<div class="product-info"><span class="product-category">' + categoryNames[p.category] + ' · CONCEPTO</span><h3>' + p.name + '</h3><p>' + p.description + '</p>' +
       '<div class="product-bottom"><div class="product-price"><small>Desde · precio ilustrativo</small><strong>' + money.format(p.base) + '</strong></div><button type="button" data-open-product="' + p.id + '">Configurar ↗</button></div><p class="product-disclosure">' + caveat + '</p>' + viewerLink + '</div></article>';
   }).join("");
@@ -310,13 +310,62 @@ function open3DViewer(key = "sofa"){
 }
 $("#viewer-reset").addEventListener("click",reset3DView);
 
+const quickExamples = {
+  nube:{width:90,depth:190,pass:70,clearW:10,clearD:10,name:"colchón 90 × 190 cm"},
+  lino:{width:180,depth:95,pass:85,clearW:20,clearD:10,name:"sofá 180 × 95 cm"},
+  aura:{width:82,depth:165,pass:78,clearW:20,clearD:10,name:"sillón relax abierto 82 × 165 cm"}
+};
+function quickNumber(id,min,max){
+  const raw = $(id).value.trim();
+  if (!raw) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= min && value <= max ? value : null;
+}
+function updateQuickFit(){
+  const id = $("#quick-fit-product").value;
+  const example = quickExamples[id];
+  const width = quickNumber("#quick-fit-width",50,1000);
+  const depth = quickNumber("#quick-fit-depth",50,1000);
+  const door = quickNumber("#quick-fit-door",40,300);
+  const postcode = postcodeState($("#quick-fit-postcode").value.trim());
+  const spaceKnown = width !== null && depth !== null;
+  const spaceOk = spaceKnown && width >= example.width + example.clearW && depth >= example.depth + example.clearD;
+  const doorOk = door !== null && door >= example.pass;
+  const allKnown = spaceKnown && door !== null && postcode.status !== "pending";
+  const anyRisk = (spaceKnown && !spaceOk) || (door !== null && !doorOk) || postcode.status === "bad";
+  const headline = anyRisk ? "Hay alertas que requieren revisión" : allKnown ? "Sin alertas en estas reglas de ejemplo" : "Completa los datos para ver posibles alertas";
+  const spaceText = !spaceKnown ? "Espacio: introduce ancho y fondo válidos." : spaceOk ? "Espacio: sin alerta para este ejemplo." : "Espacio: se estiman al menos " + (example.width + example.clearW) + " × " + (example.depth + example.clearD) + " cm libres.";
+  const accessText = door === null ? "Acceso: falta el paso más estrecho." : doorOk ? "Acceso: sin alerta con el paso indicado." : "Acceso: este ejemplo pide al menos " + example.pass + " cm de paso.";
+  const shippingText = postcode.status === "ok" ? "Cobertura: código postal peninsular según reglas de ejemplo." : postcode.status === "bad" ? "Cobertura: fuera de las reglas de esta simulación." : "Cobertura: introduce un código postal de 5 dígitos.";
+  const row = (text,state) => '<p class="' + state + '">' + text + '</p>';
+  $("#quick-fit-result").innerHTML = '<strong>' + headline + ' · requiere verificación humana</strong>' +
+    row(spaceText,!spaceKnown ? "review" : spaceOk ? "ok" : "risk") +
+    row(accessText,door === null ? "review" : doorOk ? "ok" : "risk") +
+    row(shippingText,postcode.status === "ok" ? "ok" : postcode.status === "bad" ? "risk" : "review");
+  $("#quick-fit-continue").dataset.openProduct = id;
+}
+$("#quick-fit-product").addEventListener("change",updateQuickFit);
+["#quick-fit-width","#quick-fit-depth","#quick-fit-door","#quick-fit-postcode"].forEach((id) => {
+  $(id).addEventListener("input",() => {
+    if (id === "#quick-fit-postcode") $(id).value = $(id).value.replace(/\D/g,"").slice(0,5);
+    updateQuickFit();
+  });
+});
+function copyQuickFitToConfig(){
+  $("#room-width").value = $("#quick-fit-width").value;
+  $("#room-depth").value = $("#quick-fit-depth").value;
+  $("#door-width").value = $("#quick-fit-door").value;
+  $("#postcode").value = $("#quick-fit-postcode").value;
+  updateQuote();
+}
+updateQuickFit();
 document.addEventListener("click",(event) => {
   const filter = event.target.closest("[data-filter]");
   if (filter){setFilter(filter.dataset.filter);return;}
   const viewerEntry = event.target.closest("[data-open-viewer]");
   if (viewerEntry){open3DViewer(viewerEntry.dataset.openViewer);return;}
   const openProduct = event.target.closest("[data-open-product]");
-  if (openProduct){openConfig(openProduct.dataset.openProduct);return;}
+  if (openProduct){openConfig(openProduct.dataset.openProduct);if (openProduct.hasAttribute("data-copy-fit")) copyQuickFitToConfig();return;}
   if (event.target.closest("[data-close]")){hideModal();return;}
   const remove = event.target.closest("[data-remove]");
   if (remove){cart.splice(Number(remove.dataset.remove),1);renderCart();return;}
