@@ -35,6 +35,24 @@ let currentQuote = null;
 let cart = [];
 let currentFilter = "all";
 
+const viewerModels = {
+  sofa:{
+    src:"assets/models/GlamVelvetSofa.glb",
+    alt:"Modelo 3D de sofá de muestra GlamVelvetSofa, ajeno a DormiZen",
+    credit:'<strong>Sofá 3D de muestra · GlamVelvetSofa.</strong> © 2021 Wayfair, LLC; Eric Chadwick. <a href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/GlamVelvetSofa" target="_blank" rel="noopener noreferrer">Origen</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Archivo original sin modificaciones. Es un modelo de un artículo Wayfair, ajeno a DormiZen.'
+  },
+  chair:{
+    src:"assets/models/SheenChair.glb",
+    alt:"Modelo 3D de sillón de muestra SheenChair, ajeno a DormiZen y sin mecanismo relax",
+    credit:'<strong>Sillón 3D de muestra · SheenChair.</strong> © 2020 Wayfair, LLC; Eric Chadwick. <a href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/SheenChair" target="_blank" rel="noopener noreferrer">Origen</a> · <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener noreferrer">CC0 1.0</a>. Es un sillón genérico, sin mecanismo relax y ajeno a DormiZen.'
+  }
+};
+let selectedViewerModel = "sofa";
+let viewerModulePromise = null;
+let viewerInitialized = false;
+let viewerLoadTimer = null;
+
+
 function productById(id){return products.find((p) => p.id === id);}
 function artClass(p){return "product-art art-" + p.art;}
 function renderProducts(){
@@ -43,9 +61,14 @@ function renderProducts(){
     const caveat = p.category === "colchones"
       ? "Foto de ambiente/cama publicada en dormizen.com. Nombre, opciones y precio simulados; no identifican el colchón fotografiado."
       : "Foto publicada en dormizen.com. Nombre, opciones y precio simulados; no identifican el artículo fotografiado.";
+    const viewerLink = p.category === "sofas"
+      ? '<button type="button" class="product-viewer-link" data-open-viewer="sofa">Explorar un sofá 3D de muestra ↗</button>'
+      : p.category === "relax"
+        ? '<button type="button" class="product-viewer-link" data-open-viewer="chair">Explorar un sillón 3D de muestra ↗</button>'
+        : "";
     return '<article class="product-card"><div class="product-image"><div class="' + artClass(p) + '" role="img" aria-label="Fotografía de referencia de DormiZen; no corresponde al artículo ni al precio de ejemplo"></div><span class="product-label">' + p.badge + '</span><span class="photo-label">FOTO REAL · NO ES EL PRODUCTO NI PRECIO MOSTRADOS</span></div>' +
       '<div class="product-info"><span class="product-category">' + categoryNames[p.category] + ' · CONCEPTO</span><h3>' + p.name + '</h3><p>' + p.description + '</p>' +
-      '<div class="product-bottom"><div class="product-price"><small>Desde · precio ilustrativo</small><strong>' + money.format(p.base) + '</strong></div><button type="button" data-open-product="' + p.id + '">Configurar ↗</button></div><p class="product-disclosure">' + caveat + '</p></div></article>';
+      '<div class="product-bottom"><div class="product-price"><small>Desde · precio ilustrativo</small><strong>' + money.format(p.base) + '</strong></div><button type="button" data-open-product="' + p.id + '">Configurar ↗</button></div><p class="product-disclosure">' + caveat + '</p>' + viewerLink + '</div></article>';
   }).join("");
 }
 function setFilter(filter){
@@ -190,9 +213,108 @@ function showAdvisor(advice){
   $$("#advisor-options button").forEach((b) => b.classList.toggle("active",b.dataset.advice === advice));
   $("#advisor-response").innerHTML = '<div class="advisor-response-text"><strong>' + pick.title + '</strong><br>' + pick.text + '</div><button type="button" class="recommend-link" data-open-product="' + pick.id + '">Configurar el ejemplo recomendado ↗</button>';
 }
+
+function viewerStatus(message, error = false){
+  $("#viewer-loading").hidden = !message || error;
+  $("#viewer-error").hidden = !error;
+  if (!error && message) $("#viewer-loading").textContent = message;
+  if (error) $("#viewer-error").textContent = message;
+}
+function reset3DView(){
+  const viewer = $("#sample-model");
+  viewer.cameraOrbit = window.innerWidth <= 490 ? "30deg 70deg 105%" : window.innerWidth <= 760 ? "30deg 70deg 95%" : "30deg 70deg 82%";
+  viewer.cameraTarget = "auto auto auto";
+  viewer.fieldOfView = "auto";
+  if (typeof viewer.jumpCameraToGoal === "function") viewer.jumpCameraToGoal();
+}
+function renderViewerVariants(){
+  const wrap = $("#viewer-variants");
+  const options = $("#viewer-variant-options");
+  const viewer = $("#sample-model");
+  options.replaceChildren();
+  const variants = selectedViewerModel === "sofa" && Array.isArray(viewer.availableVariants) ? viewer.availableVariants : [];
+  if (!variants.length){wrap.hidden = true;return;}
+  const labels = {Black:"Negro",Champagne:"Champán",Gray:"Gris",Navy:"Azul marino","Pale Pink":"Rosa pálido"};
+  variants.forEach((name) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.variant = name;
+    button.textContent = labels[name] || name;
+    button.setAttribute("aria-pressed","false");
+    options.append(button);
+  });
+  wrap.hidden = false;
+}
+function createModelViewer(){
+  const viewer = document.createElement("model-viewer");
+  viewer.id = "sample-model";
+  for (const [name,value] of Object.entries({
+    "camera-controls":"","touch-action":"pan-y","disable-pan":"",
+    "shadow-intensity":"0.9","shadow-softness":"0.8",
+    "environment-image":"neutral","exposure":"1",
+    "min-field-of-view":"20deg","loading":"eager",
+    "interaction-prompt":"none"
+  })) viewer.setAttribute(name,value);
+  viewer.addEventListener("load",() => {
+    if ($("#sample-model") !== viewer) return;
+    if (viewerLoadTimer) clearTimeout(viewerLoadTimer);
+    viewerLoadTimer = null;
+    viewerStatus("");
+    renderViewerVariants();
+  });
+  viewer.addEventListener("error",() => {
+    if ($("#sample-model") !== viewer) return;
+    if (viewerLoadTimer) clearTimeout(viewerLoadTimer);
+    viewerLoadTimer = null;
+    viewerStatus("No se pudo cargar este modelo 3D. Prueba otro modelo o vuelve al catálogo ilustrativo.",true);
+  });
+  return viewer;
+}
+function selectViewerModel(key){
+  const model = viewerModels[key];
+  if (!model) return;
+  selectedViewerModel = key;
+  $$("#viewer-panel [data-model]").forEach((button) => {
+    const active = button.dataset.model === key;
+    button.classList.toggle("active",active);
+    button.setAttribute("aria-pressed",String(active));
+  });
+  $("#viewer-variants").hidden = true;
+  $("#viewer-credit").innerHTML = model.credit;
+  viewerStatus("Cargando " + (key === "sofa" ? "sofá" : "sillón") + " 3D de muestra…");
+  const previous = $("#sample-model");
+  const viewer = createModelViewer();
+  previous.replaceWith(viewer);
+  viewer.alt = model.alt;
+  viewer.src = model.src;
+  reset3DView();
+  if (viewerLoadTimer) clearTimeout(viewerLoadTimer);
+  viewerLoadTimer = setTimeout(() => {
+    if (!$("#viewer-loading").hidden && selectedViewerModel === key){
+      viewerStatus("Este modelo está tardando demasiado en cargar. Prueba de nuevo más tarde o sigue con el catálogo ilustrativo.",true);
+    }
+  },20000);
+}
+function open3DViewer(key = "sofa"){
+  const requested = viewerModels[key] ? key : "sofa";
+  openModal("viewer-panel");
+  if (!viewerModulePromise) viewerModulePromise = import("./vendor/model-viewer.min.js");
+  viewerModulePromise.then(() => customElements.whenDefined("model-viewer")).then(() => {
+    if (!viewerInitialized){viewerInitialized = true;selectViewerModel(requested);}
+    else if (selectedViewerModel !== requested) selectViewerModel(requested);
+    else reset3DView();
+  }).catch(() => {
+    viewerModulePromise = null;
+    viewerStatus("El visor 3D no se pudo cargar. El resto del prototipo sigue disponible.",true);
+  });
+}
+$("#viewer-reset").addEventListener("click",reset3DView);
+
 document.addEventListener("click",(event) => {
   const filter = event.target.closest("[data-filter]");
   if (filter){setFilter(filter.dataset.filter);return;}
+  const viewerEntry = event.target.closest("[data-open-viewer]");
+  if (viewerEntry){open3DViewer(viewerEntry.dataset.openViewer);return;}
   const openProduct = event.target.closest("[data-open-product]");
   if (openProduct){openConfig(openProduct.dataset.openProduct);return;}
   if (event.target.closest("[data-close]")){hideModal();return;}
@@ -200,11 +322,16 @@ document.addEventListener("click",(event) => {
   if (remove){cart.splice(Number(remove.dataset.remove),1);renderCart();return;}
   const advice = event.target.closest("[data-advice]");
   if (advice){showAdvisor(advice.dataset.advice);return;}
-  const angle = event.target.closest("[data-angle]");
-  if (angle){
-    $$("#viewer-panel [data-angle]").forEach((b) => b.classList.toggle("active",b === angle));
-    $("#viewer-product").className = "viewer-product product-art art-5" + (angle.dataset.angle === "front" ? "" : " angle-" + angle.dataset.angle);
-    $("#viewer-angle-label").textContent = {front:"Vista frontal",three:"Ángulo simulado",side:"Lateral simulado"}[angle.dataset.angle];
+  const model = event.target.closest("#viewer-panel [data-model]");
+  if (model){selectViewerModel(model.dataset.model);return;}
+  const variant = event.target.closest("#viewer-variant-options [data-variant]");
+  if (variant){
+    $("#sample-model").variantName = variant.dataset.variant;
+    $$("#viewer-variant-options button").forEach((button) => {
+      const active = button === variant;
+      button.classList.toggle("active",active);
+      button.setAttribute("aria-pressed",String(active));
+    });
   }
 });
 $("#product-options").addEventListener("click",(event) => {
@@ -221,7 +348,7 @@ $("#product-options").addEventListener("click",(event) => {
   });
 });
 $("#cart-trigger").addEventListener("click",() => {renderCart();openModal("cart-panel");});
-$("#open-viewer").addEventListener("click",() => openModal("viewer-panel"));
+$("#open-viewer").addEventListener("click",() => open3DViewer("sofa"));
 $("#open-advisor").addEventListener("click",() => openModal("advisor-panel"));
 $("#add-to-cart").addEventListener("click",() => {
   updateQuote();
@@ -254,6 +381,3 @@ document.addEventListener("keydown",(event) => {
 });
 renderProducts();
 renderCart();
-
-
-
