@@ -39,11 +39,14 @@ function productById(id){return products.find((p) => p.id === id);}
 function artClass(p){return "product-art art-" + p.art;}
 function renderProducts(){
   const list = currentFilter === "all" ? products : products.filter((p) => p.category === currentFilter);
-  $("#catalog-grid").innerHTML = list.map((p) =>
-    '<article class="product-card"><div class="product-image"><div class="' + artClass(p) + '" role="img" aria-label="Imagen ilustrativa de ' + p.name + '"></div><span class="product-label">' + p.badge + '</span></div>' +
-    '<div class="product-info"><span class="product-category">' + categoryNames[p.category] + ' · CONCEPTO</span><h3>' + p.name + '</h3><p>' + p.description + '</p>' +
-    '<div class="product-bottom"><div class="product-price"><small>Desde · precio ilustrativo</small><strong>' + money.format(p.base) + '</strong></div><button type="button" data-open-product="' + p.id + '">Configurar ↗</button></div></div></article>'
-  ).join("");
+  $("#catalog-grid").innerHTML = list.map((p) => {
+    const caveat = p.category === "colchones"
+      ? "Foto de ambiente/cama publicada en dormizen.com. Nombre, opciones y precio simulados; no identifican el colchón fotografiado."
+      : "Foto publicada en dormizen.com. Nombre, opciones y precio simulados; no identifican el artículo fotografiado.";
+    return '<article class="product-card"><div class="product-image"><div class="' + artClass(p) + '" role="img" aria-label="Fotografía de referencia de DormiZen; no corresponde al artículo ni al precio de ejemplo"></div><span class="product-label">' + p.badge + '</span><span class="photo-label">FOTO REAL · NO ES EL PRODUCTO NI PRECIO MOSTRADOS</span></div>' +
+      '<div class="product-info"><span class="product-category">' + categoryNames[p.category] + ' · CONCEPTO</span><h3>' + p.name + '</h3><p>' + p.description + '</p>' +
+      '<div class="product-bottom"><div class="product-price"><small>Desde · precio ilustrativo</small><strong>' + money.format(p.base) + '</strong></div><button type="button" data-open-product="' + p.id + '">Configurar ↗</button></div><p class="product-disclosure">' + caveat + '</p></div></article>';
+  }).join("");
 }
 function setFilter(filter){
   currentFilter = filter;
@@ -155,7 +158,7 @@ function openConfig(id){
   if (!currentProduct) return;
   selected = Object.fromEntries(optionSets[currentProduct.category].map((g) => [g.key,g.choices[0].value]));
   $("#config-title").textContent = "Configura " + currentProduct.name;
-  $("#config-product").innerHTML = '<div class="config-thumb ' + artClass(currentProduct) + '" role="img" aria-label="Imagen ilustrativa"></div><div><span>' + categoryNames[currentProduct.category] + ' · EJEMPLO</span><h3>' + currentProduct.name + '</h3><p>' + currentProduct.featured + '</p></div>';
+  $("#config-product").innerHTML = '<div class="config-thumb ' + artClass(currentProduct) + '" role="img" aria-label="Fotografía oficial de referencia, no del producto ficticio"></div><div><span>' + categoryNames[currentProduct.category] + ' · EJEMPLO</span><h3>' + currentProduct.name + '</h3><p>' + currentProduct.featured + '</p></div>';
   $("#room-width").value = 300;
   $("#room-depth").value = 260;
   $("#door-width").value = 95;
@@ -173,7 +176,7 @@ function renderCart(){
     return;
   }
   $("#cart-items").innerHTML = cart.map((item,index) =>
-    '<div class="cart-item"><div class="cart-thumb product-art art-' + item.art + '" role="img" aria-label="Imagen ilustrativa"></div><div class="cart-item-main"><h3>' + item.name + '</h3><p>' + item.options + '</p><strong>' + money.format(item.total) + ' · total ilustrativo</strong><br><button type="button" class="cart-remove" data-remove="' + index + '">Quitar</button></div></div>'
+    '<div class="cart-item"><div class="cart-thumb product-art art-' + item.art + '" role="img" aria-label="Fotografía oficial de referencia, no del producto ficticio"></div><div class="cart-item-main"><h3>' + item.name + '</h3><p>' + item.options + '</p><strong>' + money.format(item.total) + ' · total ilustrativo</strong><br><button type="button" class="cart-remove" data-remove="' + index + '">Quitar</button></div></div>'
   ).join("");
 }
 function showAdvisor(advice){
@@ -200,7 +203,7 @@ document.addEventListener("click",(event) => {
   const angle = event.target.closest("[data-angle]");
   if (angle){
     $$("#viewer-panel [data-angle]").forEach((b) => b.classList.toggle("active",b === angle));
-    $("#viewer-product").className = "viewer-product product-art art-4" + (angle.dataset.angle === "front" ? "" : " angle-" + angle.dataset.angle);
+    $("#viewer-product").className = "viewer-product product-art art-5" + (angle.dataset.angle === "front" ? "" : " angle-" + angle.dataset.angle);
     $("#viewer-angle-label").textContent = {front:"Vista frontal",three:"Ángulo simulado",side:"Lateral simulado"}[angle.dataset.angle];
   }
 });
@@ -251,4 +254,6 @@ document.addEventListener("keydown",(event) => {
 });
 renderProducts();
 renderCart();
+
+
 
