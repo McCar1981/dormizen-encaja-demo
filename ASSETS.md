@@ -16,7 +16,7 @@ Las fotos cama001 y cama002 muestran camas completas y no un colchón aislado. N
 
 **Derechos:** las seis fotos seleccionadas no contienen avisos explícitos de autor, licencia o copyright en sus metadatos EXIF/XMP/IPTC, pero eso no acredita permiso de reutilización. Antes de publicar una tienda comercial definitiva, confirmar autorización de DormiZen y de los posibles autores o proveedores. La foto de sofá sofa001.jpg no se incorporó porque sus metadatos indican «Tarkett property - all rights reserved».
 
-**Portada actual:** `assets/sofa014.jpg` procede de la web de DormiZen y se muestra solo como referencia visual de categoría. No representa el producto ficticio ni el precio del configurador. `assets/hero.webp` fue una imagen generada para una versión anterior y ya no se muestra en el demo.
+**Portada actual:** `assets/cama001.jpg` procede de la web de DormiZen y se muestra solo como referencia visual de categoría. No representa el producto ficticio ni el precio del configurador. `assets/hero.webp` fue una imagen generada para una versión anterior y ya no se muestra en el demo.
 
 
 ## Modelos 3D y visor

@@ -222,3 +222,5 @@ body{background:#f7f7f6;color:#151515}
  .quick-fit-card{scroll-margin-top:174px}
  .hero-category-links{display:none}
 }
+
+@media(min-width:761px) and (max-width:1050px){.brand-concept{display:none}.brand-logo{width:150px}.desktop-nav{gap:22px;font-size:11px;letter-spacing:.08em}}
