@@ -1,4 +1,4 @@
-# DormiZen Encaja · demo conceptual
+# DormiZen · tienda online · demo conceptual
 
 Propuesta independiente de tienda online para presentar a DormiZen. **No es la tienda oficial y no realiza pedidos.**
 

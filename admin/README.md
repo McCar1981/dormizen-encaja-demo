@@ -1,10 +1,10 @@
-# Administrador conceptual · DormiZen Encaja
+# Administrador conceptual · DormiZen
 
 Prototipo estático y navegable. No utiliza datos de DormiZen, no se autentica, no guarda cambios, no crea productos, no publica campañas y no está conectado a pedidos, anuncios, fabricación ni transporte. Los cambios de los formularios solo viven en memoria hasta recargar la página.
 
 ## Recorridos
 
-- **Catálogo y Encaja:** alta ficticia → reglas de precio y cobertura de ejemplo → previsualización y prechequeo de medidas.
+- **Catálogo y reglas:** alta ficticia → reglas de precio y cobertura de ejemplo → previsualización y prechequeo de medidas.
 - **Campañas:** titular, descuento y código ficticios → banner de ejemplo → contribución simplificada por un pedido hipotético.
 - **Medición y equipo:** indicadores y roles propuestos, sin cifras reales.
 
@@ -14,7 +14,7 @@ Las imágenes y el logo se reutilizan desde la carpeta superior del demo y tiene
 
 ## Arquitectura para la tienda real
 
-Recomendación preliminar: utilizar una plataforma de comercio con administración existente y desarrollar únicamente el módulo Encaja para las reglas de fabricación, precio y entrega. La opción que mejor encaja a priori es WooCommerce con un tema propio y un plugin propio; confirmar en descubrimiento con el volumen de catálogo, la operativa y el presupuesto. La validación de las reglas tendría que ocurrir en el servidor, tanto al configurar como al pasar por carrito y pago, y quedar registrada con cada pedido. GitHub Pages solo aloja esta maqueta estática.
+Recomendación preliminar: utilizar una plataforma de comercio con administración existente y desarrollar únicamente el módulo de configuración y entrega para las reglas de fabricación, precio y entrega. WooCommerce es una opción provisional con un tema propio y un plugin propio; confirmar en descubrimiento con el volumen de catálogo, la operativa y el presupuesto. La validación de las reglas tendría que ocurrir en el servidor, tanto al configurar como al pasar por carrito y pago, y quedar registrada con cada pedido. GitHub Pages solo aloja esta maqueta estática.
 
 Fuentes oficiales consultadas:
 - WooCommerce: https://woocommerce.com/document/variable-product/

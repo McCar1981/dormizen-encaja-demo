@@ -233,3 +233,6 @@ body{background:#f7f7f6;color:#151515}
 .desktop-nav .nav-fit:hover{border-color:#ed1c24;background:#fee1e3}
 @media(min-width:761px) and (max-width:1050px){.desktop-nav{gap:19px;font-size:11px;letter-spacing:.06em}.desktop-nav .nav-fit{padding:10px 12px}}
 @media(max-width:760px){.mobile-quick-nav a{padding:12px 10px}.mobile-quick-nav a.is-active{color:#b8121c;background:#fff0f0;box-shadow:inset 0 -3px #ed1c24}}
+/* Acciones comerciales que explican su utilidad. */
+@media(min-width:761px) and (max-width:1050px){.desktop-nav{gap:14px;font-size:10.5px;letter-spacing:.03em}.desktop-nav .nav-fit{font-size:10px;padding:10px 9px;gap:6px}}
+@media(max-width:760px){.mobile-quick-nav{align-items:stretch;overflow:visible}.mobile-quick-nav a{min-width:0;padding:10px 6px;display:flex;align-items:center;justify-content:center;white-space:normal;font-size:10px;line-height:1.2}.mobile-quick-nav .quick-nav-fit{flex-direction:column;gap:2px;min-height:46px}.section,.quick-fit-card{scroll-margin-top:185px}.pdp-config{scroll-margin-top:185px}}

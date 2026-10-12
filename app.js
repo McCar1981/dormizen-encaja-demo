@@ -173,7 +173,7 @@ function updateQuote(){
   $("#total-price").textContent = total === null ? "—" : money.format(total);
   const ready = fits && fabricated && postcode.status === "ok";
   $("#add-to-cart").disabled = !ready;
-  $("#config-action-hint").textContent = ready ? "Total y entrega calculados solo para esta demostración." : "Revisa los avisos de Encaja para continuar.";
+  $("#config-action-hint").textContent = ready ? "Total y entrega calculados solo para esta demostración." : "Revisa las medidas y los avisos de envío para continuar.";
   currentQuote = ready ? {
     productId:currentProduct.id,name:currentProduct.name,art:currentProduct.art,
     options:optionSets[currentProduct.category].map((g) => getChoice(g.key).label).join(" · ") + (accessories.length ? " · Complementos: " + accessories.map(a=>a.name).join(", ") : ""),
@@ -204,7 +204,7 @@ function renderCart(){
   $("#cart-total").textContent = money.format(cart.reduce((sum,item) => sum + item.total,0));
   $("#confirm-cart").disabled = cart.length === 0;
   if (!cart.length){
-    $("#cart-items").innerHTML = '<div class="empty-cart"><div class="empty-cart-icon">◌</div><h3>Tu selección está vacía.</h3><p>Elige un producto y prueba cómo encaja.</p></div>';
+    $("#cart-items").innerHTML = '<div class="empty-cart"><div class="empty-cart-icon">◌</div><h3>Tu selección está vacía.</h3><p>Elige un producto y descubre sus opciones.</p></div>';
     return;
   }
   $("#cart-items").innerHTML = cart.map((item,index) =>
@@ -214,7 +214,7 @@ function renderCart(){
 function showAdvisor(advice){
   const examples = {
     space:{title:"Aprovechar el espacio",text:"Puedes empezar por un sofá compacto y comprobar ancho, fondo y paso antes de decidir. El ejemplo de Sofá Lino permite probar ese recorrido.",id:"lino"},
-    comfort:{title:"Máximo confort",text:"Prueba las medidas y sensaciones del Colchón Origen. El chequeo Encaja te enseña cómo quedaría esa elección en tu habitación.",id:"origen"},
+    comfort:{title:"Máximo confort",text:"Compara las medidas y opciones del Colchón Origen. Revisa el espacio disponible y el precio total de ejemplo antes de elegir.",id:"origen"},
     care:{title:"Fácil mantenimiento",text:"En esta simulación puedes comparar el acabado de microfibra del Sofá Esquina y revisar medidas y precio antes de añadirlo.",id:"esquina"}
   };
   const pick = examples[advice];

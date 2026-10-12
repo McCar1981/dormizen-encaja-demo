@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   const views = ["overview", "product", "campaign", "measurement"];
-  const breadcrumbs = { overview: "VISIÓN GENERAL", product: "CATÁLOGO Y ENCAJA", campaign: "CAMPAÑAS", measurement: "MEDICIÓN Y EQUIPO" };
+  const breadcrumbs = { overview: "VISIÓN GENERAL", product: "CATÁLOGO Y REGLAS", campaign: "CAMPAÑAS", measurement: "MEDICIÓN Y EQUIPO" };
   const byId = id => document.getElementById(id);
   const euro = value => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
   const value = id => byId(id).value.trim();

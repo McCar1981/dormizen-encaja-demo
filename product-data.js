@@ -55,7 +55,7 @@ window.DormiZenProductDetails = {
   },
   lino: {
     intro: "Un sofá de ejemplo pensado para explorar un salón contenido. Compara dos formatos, elige entre los tapizados ilustrativos y revisa el espacio de uso y acceso antes de añadirlo a tu selección.",
-    highlights: ["Dos formatos admitidos en la demo", "Tres tapizados con precio visible", "Chequeo de ancho, fondo y acceso"],
+    highlights: ["Dos formatos admitidos en la demo", "Tres tapizados con precio visible", "Comprobación de ancho, fondo y acceso"],
     specs: [
       ["Tipo de ficha", "Especificaciones de ejemplo; artículo ficticio"],
       ["Formato base", "2 plazas · 180 × 95 cm"],
@@ -103,7 +103,7 @@ window.DormiZenProductDetails = {
   },
   aura: {
     intro: "Un sillón relax de ejemplo para crear un lugar de pausa. Compara mecanismo y acabado, mira el espacio necesario al desplegarse y revisa las reglas ilustrativas antes de completar tu selección.",
-    highlights: ["Mecanismo manual o eléctrico en la demo", "Chequeo con el sillón desplegado", "Acabado y precio actualizados al elegir"],
+    highlights: ["Mecanismo manual o eléctrico en la demo", "Comprobación con el sillón desplegado", "Acabado y precio actualizados al elegir"],
     specs: [
       ["Tipo de ficha", "Especificaciones de ejemplo; artículo ficticio"],
       ["Manual desplegado", "82 × 165 cm"],

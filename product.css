@@ -167,3 +167,4 @@
 #pdp-title:focus{outline:none}
 
 @media(max-width:520px){.product-detail[data-category="sofas"] .pdp-media-main{aspect-ratio:1.4}}
+@media(max-width:760px){.pdp-config{scroll-margin-top:185px}}

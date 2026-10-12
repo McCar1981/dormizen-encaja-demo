@@ -63,15 +63,15 @@ function updateProductSummary(quote){
   $("#pdp-fact-delivery").textContent=quote.postcode.status==="ok"?(quote.postcode.local?"7–12 días":"12–20 días"):"Por confirmar";
   $("#pdp-cross-total").textContent=money.format(quote.complementTotal);
   $("#pdp-mobile-price").textContent=quote.total===null?money.format(quote.item+quote.complementTotal):money.format(quote.total);
-  $("#pdp-mobile-label").textContent=quote.total===null?"Selección · transporte pendiente":quote.ready?"Total ilustrativo · IVA incluido":"Total ilustrativo · revisa Encaja";
-  $("#pdp-mobile-buy").textContent=pdpHasReviewedConfig?(quote.ready?"Añadir al carrito":"Revisar Encaja"):"Ver opciones";
+  $("#pdp-mobile-label").textContent=quote.total===null?"Selección · transporte pendiente":quote.ready?"Total ilustrativo · IVA incluido":"Total ilustrativo · revisa medidas y envío";
+  $("#pdp-mobile-buy").textContent=pdpHasReviewedConfig?(quote.ready?"Añadir al carrito":"Revisar datos"):"Ver opciones";
   if(productGalleryIndex==="measures") updateProductDiagram(quote.dim);
 }
 function activateProductPage(id,fromRoute){
   $("#inicio").hidden=true;$("#product-detail").hidden=false;
   document.body.classList.add("product-view");
   setFilter(currentProduct.category);
-  document.title=currentProduct.name+" · DormiZen Encaja · Prototipo";
+  document.title=currentProduct.name+" · DormiZen · Tienda online · Prototipo";
   if(!fromRoute && location.hash!=="#producto/"+id)history.pushState({product:id},"","#producto/"+id);
   window.scrollTo({top:0,behavior:"instant"});
   $("#pdp-title").focus({preventScroll:true});
@@ -80,7 +80,7 @@ function showHomePage(){
   if(!$("#product-detail") || $("#product-detail").hidden)return;
   $("#product-detail").hidden=true;$("#inicio").hidden=false;
   document.body.classList.remove("product-view");
-  document.title="DormiZen Encaja · Prototipo conceptual";
+  document.title="DormiZen · Tienda online · Prototipo conceptual";
 }
 function scrollProductConfig(){
   $("#config-panel").scrollIntoView({behavior:"smooth",block:"start"});
