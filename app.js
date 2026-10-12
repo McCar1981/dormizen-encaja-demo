@@ -34,6 +34,8 @@ let selected = {};
 let currentQuote = null;
 let cart = [];
 let currentFilter = "all";
+let currentDetails = null;
+let selectedAccessoryIds = new Set();
 
 const viewerModels = {
   sofa:{
@@ -55,21 +57,13 @@ let viewerLoadTimer = null;
 
 function productById(id){return products.find((p) => p.id === id);}
 function artClass(p){return "product-art art-" + p.art;}
+function productCard(p){
+  const caveat=p.category==="colchones"?"Foto oficial de ambiente. El colchón, sus opciones y precio son ficticios.":"Foto oficial de referencia. Producto, opciones y precio ficticios.";
+  return '<article class="product-card"><a class="product-image" href="#producto/'+p.id+'" data-open-product="'+p.id+'" aria-label="Ver ficha de '+p.name+'"><div class="'+artClass(p)+'" role="img" aria-label="Referencia visual de categoría, no del producto ficticio"></div><span class="product-label">'+p.badge+'</span><span class="photo-label">FOTO OFICIAL · REFERENCIA DE CATEGORÍA</span></a><div class="product-info"><span class="product-category">'+categoryNames[p.category]+' · CONCEPTO</span><h3><a href="#producto/'+p.id+'" data-open-product="'+p.id+'">'+p.name+'</a></h3><p>'+p.description+'</p><div class="product-bottom"><div class="product-price"><small>Desde · precio ilustrativo</small><strong>'+money.format(p.base)+'</strong></div><button type="button" data-open-product="'+p.id+'">Ver ficha ↗</button></div><p class="product-disclosure">'+caveat+'</p></div></article>';
+}
 function renderProducts(){
-  const list = currentFilter === "all" ? products : products.filter((p) => p.category === currentFilter);
-  $("#catalog-grid").innerHTML = list.map((p) => {
-    const caveat = p.category === "colchones"
-      ? "Foto oficial de ambiente. El colchón, sus opciones y su precio son ficticios."
-      : "Foto oficial de referencia. El producto, sus opciones y su precio son ficticios.";
-    const viewerLink = p.category === "sofas"
-      ? '<button type="button" class="product-viewer-link" data-open-viewer="sofa">Explorar un sofá 3D de muestra ↗</button>'
-      : p.category === "relax"
-        ? '<button type="button" class="product-viewer-link" data-open-viewer="chair">Explorar un sillón 3D de muestra ↗</button>'
-        : "";
-    return '<article class="product-card"><div class="product-image"><div class="' + artClass(p) + '" role="img" aria-label="Fotografía de referencia de DormiZen; no corresponde al artículo ni al precio de ejemplo"></div><span class="product-label">' + p.badge + '</span><span class="photo-label">FOTO OFICIAL · REFERENCIA DE CATEGORÍA</span></div>' +
-      '<div class="product-info"><span class="product-category">' + categoryNames[p.category] + ' · CONCEPTO</span><h3>' + p.name + '</h3><p>' + p.description + '</p>' +
-      '<div class="product-bottom"><div class="product-price"><small>Desde · precio ilustrativo</small><strong>' + money.format(p.base) + '</strong></div><button type="button" data-open-product="' + p.id + '">Configurar ↗</button></div><p class="product-disclosure">' + caveat + '</p>' + viewerLink + '</div></article>';
-  }).join("");
+  const list=currentFilter==="all"?products:products.filter((p)=>p.category===currentFilter);
+  $("#catalog-grid").innerHTML=list.map(productCard).join("");
 }
 function setFilter(filter){
   currentFilter = filter;
@@ -162,7 +156,9 @@ function updateQuote(){
   const shipping = postcode.status === "ok" ? ({colchones:postcode.local ? 39 : 69,sofas:postcode.local ? 69 : 119,relax:postcode.local ? 59 : 89})[currentProduct.category] : null;
   const extras = optionSets[currentProduct.category].reduce((sum,group) => sum + getChoice(group.key).extra,0);
   const item = currentProduct.base + extras;
-  const total = shipping === null ? null : item + shipping;
+  const accessories = getSelectedAccessories();
+  const complementTotal = accessories.reduce((sum,a)=>sum+a.price,0);
+  const total = shipping === null ? null : item + shipping + complementTotal;
   let spaceDetail = "Completa las tres medidas con valores válidos.";
   if (measured) spaceDetail = fits ? dim.label + " · margen ilustrativo y paso mínimos cumplidos." : "Se requieren al menos " + (dim.width + dim.clearW) + " × " + (dim.depth + dim.clearD) + " cm libres y paso de " + dim.pass + " cm.";
   const fabricationDetail = fabricated ? "Combinación disponible en las reglas de esta demo." : "Esta combinación se ha marcado como no fabricable en la demo.";
@@ -172,19 +168,25 @@ function updateQuote(){
     fitRow(postcode.status,"3 · Entrega por código postal",postcode.detail);
   $("#item-price").textContent = money.format(item);
   $("#shipping-price").textContent = shipping === null ? "Pendiente" : money.format(shipping);
+  $("#complement-row").hidden = complementTotal === 0;
+  $("#complement-price").textContent = money.format(complementTotal);
   $("#total-price").textContent = total === null ? "—" : money.format(total);
   const ready = fits && fabricated && postcode.status === "ok";
   $("#add-to-cart").disabled = !ready;
   $("#config-action-hint").textContent = ready ? "Total y entrega calculados solo para esta demostración." : "Revisa los avisos de Encaja para continuar.";
   currentQuote = ready ? {
     productId:currentProduct.id,name:currentProduct.name,art:currentProduct.art,
-    options:optionSets[currentProduct.category].map((g) => getChoice(g.key).label).join(" · "),
-    item:item,shipping:shipping,total:total
+    options:optionSets[currentProduct.category].map((g) => getChoice(g.key).label).join(" · ") + (accessories.length ? " · Complementos: " + accessories.map(a=>a.name).join(", ") : ""),
+    item:item,shipping:shipping,complements:complementTotal,total:total
   } : null;
+  updateProductSummary({dim,item,shipping,total,complementTotal,ready,postcode});
 }
-function openConfig(id){
+function openConfig(id,fromRoute=false){
   currentProduct = productById(id);
   if (!currentProduct) return;
+  if (activeModal) hideModal(false);
+  currentDetails = window.DormiZenProductDetails[id];
+  selectedAccessoryIds.clear();
   selected = Object.fromEntries(optionSets[currentProduct.category].map((g) => [g.key,g.choices[0].value]));
   $("#config-title").textContent = "Configura " + currentProduct.name;
   $("#config-product").innerHTML = '<div class="config-thumb ' + artClass(currentProduct) + '" role="img" aria-label="Fotografía oficial de referencia, no del producto ficticio"></div><div><span>' + categoryNames[currentProduct.category] + ' · EJEMPLO</span><h3>' + currentProduct.name + '</h3><p>' + currentProduct.featured + '</p></div>';
@@ -193,8 +195,9 @@ function openConfig(id){
   $("#door-width").value = 95;
   $("#postcode").value = "46800";
   renderOptions();
+  renderProductDetails(currentProduct);
   updateQuote();
-  openModal("config-panel");
+  activateProductPage(id,fromRoute);
 }
 function renderCart(){
   $("#cart-count").textContent = String(cart.length);
@@ -367,11 +370,13 @@ function copyQuickFitToConfig(){
 updateQuickFit();
 document.addEventListener("click",(event) => {
   const filter = event.target.closest("[data-filter]");
-  if (filter){setFilter(filter.dataset.filter);return;}
+  if (filter){showHomePage();setFilter(filter.dataset.filter);return;}
+  const homeLink = event.target.closest('a[href^="#"]');
+  if(homeLink && ["#inicio","#catalogo","#como-funciona","#experiencias","#quick-fit"].includes(homeLink.getAttribute("href"))) showHomePage();
   const viewerEntry = event.target.closest("[data-open-viewer]");
   if (viewerEntry){open3DViewer(viewerEntry.dataset.openViewer);return;}
   const openProduct = event.target.closest("[data-open-product]");
-  if (openProduct){openConfig(openProduct.dataset.openProduct);if (openProduct.hasAttribute("data-copy-fit")) copyQuickFitToConfig();return;}
+  if (openProduct){event.preventDefault();openConfig(openProduct.dataset.openProduct);if (openProduct.hasAttribute("data-copy-fit")){copyQuickFitToConfig();scrollProductConfig();}return;}
   if (event.target.closest("[data-close]")){hideModal();return;}
   const remove = event.target.closest("[data-remove]");
   if (remove){cart.splice(Number(remove.dataset.remove),1);renderCart();return;}
@@ -420,6 +425,9 @@ $("#confirm-cart").addEventListener("click",() => {
 });
 $("#back-to-shop").addEventListener("click",() => {
   hideModal(false);
+  showHomePage();
+  setFilter("all");
+  history.pushState({},"","#catalogo");
   document.getElementById("catalogo").scrollIntoView({behavior:"smooth"});
   document.querySelector("[data-filter=all]").focus();
 });

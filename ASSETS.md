@@ -1,6 +1,6 @@
 # Fuentes visuales y atribución
 
-El logo y las seis fotografías usadas en tarjetas, portada y categorías son archivos locales descargados de dormizen.com el 11 de octubre de 2026 para esta propuesta. Las URL de origen son:
+El logo y las seis fotografías usadas en tarjetas, portada, categorías y galerías de ficha son archivos locales descargados de dormizen.com el 11 de octubre de 2026 para esta propuesta. Las URL de origen son:
 
 | Archivo local | Referencia en el demo | URL de origen |
 | --- | --- | --- |
@@ -31,3 +31,9 @@ El visor usa dos archivos GLB locales de [Khronos glTF Sample Assets](https://gi
 El componente local `vendor/model-viewer.min.js` procede de `@google/model-viewer@4.3.1`: https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js . Su licencia [Apache 2.0](https://github.com/google/model-viewer/blob/master/LICENSE) se conserva en `vendor/model-viewer.LICENSE.txt`. El GLB se carga al abrir el visor; el paquete también se importa entonces.
 
 No hay modelo de colchón ni de mecanismo relax en esta demostración. Para una tienda definitiva habría que obtener o producir modelos de cada producto real y confirmar sus derechos, medidas, materiales y comportamiento.
+
+## Fichas y venta asociada del prototipo
+
+Las galerías reúnen fotos distintas de la misma categoría para demostrar navegación y ampliación. No representan distintos ángulos, variantes o configuraciones de un mismo artículo ficticio. Cada foto y su descripción conservan esa advertencia. Las medidas 2D se dibujan en SVG con reglas ilustrativas del configurador; no son planos técnicos ni modelos 3D.
+
+Las ilustraciones SVG de complementos son iconos de concepto creados en código. Los accesorios, sus precios y la asociación a cada familia son ejemplos ficticios; no existe compatibilidad real confirmada.
