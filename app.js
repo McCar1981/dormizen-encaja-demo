@@ -78,6 +78,12 @@ function setFilter(filter){
     button.classList.toggle("active",active);
     button.setAttribute("aria-pressed",String(active));
   });
+  $$(".desktop-nav [data-filter],.mobile-quick-nav [data-filter]").forEach((link) => {
+    const active = link.dataset.filter === filter;
+    link.classList.toggle("is-active",active);
+    if (active) link.setAttribute("aria-current","true");
+    else link.removeAttribute("aria-current");
+  });
   renderProducts();
 }
 function hideModal(restore){
