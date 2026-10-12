@@ -37,22 +37,6 @@ let currentFilter = "all";
 let currentDetails = null;
 let selectedAccessoryIds = new Set();
 
-const viewerModels = {
-  sofa:{
-    src:"assets/models/GlamVelvetSofa.glb",
-    alt:"Modelo 3D de sofá de muestra GlamVelvetSofa, ajeno a DormiZen",
-    credit:'<strong>Sofá 3D de muestra · GlamVelvetSofa.</strong> © 2021 Wayfair, LLC; Eric Chadwick. <a href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/GlamVelvetSofa" target="_blank" rel="noopener noreferrer">Origen</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Archivo original sin modificaciones. Es un modelo de un artículo Wayfair, ajeno a DormiZen.'
-  },
-  chair:{
-    src:"assets/models/SheenChair.glb",
-    alt:"Modelo 3D de sillón de muestra SheenChair, ajeno a DormiZen y sin mecanismo relax",
-    credit:'<strong>Sillón 3D de muestra · SheenChair.</strong> © 2020 Wayfair, LLC; Eric Chadwick. <a href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/SheenChair" target="_blank" rel="noopener noreferrer">Origen</a> · <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener noreferrer">CC0 1.0</a>. Es un sillón genérico, sin mecanismo relax y ajeno a DormiZen.'
-  }
-};
-let selectedViewerModel = "sofa";
-let viewerModulePromise = null;
-let viewerInitialized = false;
-let viewerLoadTimer = null;
 
 
 function productById(id){return products.find((p) => p.id === id);}
@@ -98,33 +82,52 @@ function openModal(id){
   const first = activeModal.querySelector("button, input");
   if (first) first.focus();
 }
+function getProductOptionSets(){
+  const sets=optionSets[currentProduct.category].map(g=>({...g,choices:g.choices.map(c=>({...c}))}));
+  if(currentProduct.category==="sofas"){
+    sets[0]={key:"format",label:"Ancho",choices:currentProduct.id==="esquina"?[{value:"260",label:"260 cm",extra:0},{value:"280",label:"280 cm",extra:210},{value:"300",label:"300 cm",extra:440}]:[{value:"180",label:"180 cm",extra:0},{value:"220",label:"220 cm",extra:210}]};
+    sets[1]={key:"fabric",label:"Tipo de tela",visual:"fabric",choices:[{value:"arena",label:"Lino",texture:"lino",extra:0},{value:"micro",label:"Microfibra",texture:"microfibra",extra:85},{value:"anti",label:"Tejido técnico",texture:"tecnico",extra:160}]};
+  }
+  if(currentDetails.colors?.length)sets.unshift({key:"color",label:"Color",visual:"color",choices:currentDetails.colors});
+  return sets;
+}
+function currentProductVisual(){
+  return currentDetails.colors?.find(c=>c.value===selected.color)||{src:currentDetails.gallery[0].src,simulated:false};
+}
 function renderOptions(){
-  const sets = optionSets[currentProduct.category];
-  $("#product-options").innerHTML = sets.map((group) => {
-    const choices = group.choices.map((choice) =>
-      '<button type="button" class="option-button' + (selected[group.key] === choice.value ? ' active' : '') + '" data-option="' + group.key + '" data-value="' + choice.value + '" aria-pressed="' + (selected[group.key] === choice.value) + '">' +
-      choice.label + (choice.extra ? '<small>+' + money.format(choice.extra) + '</small>' : '<small>Incluido</small>') + '</button>'
-    ).join("");
-    return '<div class="config-group"><h3>' + group.label + '</h3><div class="option-row">' + choices + '</div></div>';
+  const sets=getProductOptionSets();
+  const visual=currentProductVisual();
+  $("#product-options").innerHTML=sets.map(group=>{
+    const choices=group.choices.map(choice=>{
+      const active=selected[group.key]===choice.value;
+      const attrs=' data-option="'+group.key+'" data-value="'+choice.value+'" aria-pressed="'+active+'"';
+      const price=choice.extra?'+'+money.format(choice.extra):'Incluido';
+      if(group.visual==="color")return '<button type="button" class="color-choice'+(active?' active':'')+'"'+attrs+'><img src="'+choice.src+'" alt=""><span class="color-label"><span class="color-dot" style="--swatch:'+choice.hex+'" aria-hidden="true"></span>'+choice.label+'</span><small>'+(choice.simulated?'Vista simulada':'Foto original')+'</small></button>';
+      if(group.visual==="fabric")return '<button type="button" class="fabric-choice'+(active?' active':'')+'"'+attrs+'><span class="fabric-sample" data-fabric="'+choice.texture+'" style="--sample-color:'+(visual.hex||'#c6b9a4')+'" aria-hidden="true"></span><strong>'+choice.label+'</strong><small>'+price+'</small></button>';
+      return '<button type="button" class="option-button'+(active?' active':'')+'"'+attrs+'>'+choice.label+'<small>'+price+'</small></button>';
+    }).join("");
+    const style=group.visual==="color"?'pdp-variant-options':group.visual==="fabric"?'fabric-options':'option-row';
+    const note=group.visual==="color"?'<p class="fabric-note">El color simulado es orientativo; confirma el tono con una muestra real.</p>':group.visual==="fabric"?'<p class="fabric-note">Texturas ilustradas, no muestras del proveedor. La tela no modifica la foto.</p>':'';
+    return '<div class="config-group"><h3>'+group.label+'</h3><div class="'+style+'" role="group" aria-label="'+group.label+'">'+choices+'</div>'+note+'</div>';
   }).join("");
 }
 function getChoice(key){
-  const group = optionSets[currentProduct.category].find((g) => g.key === key);
-  return group.choices.find((c) => c.value === selected[key]);
+  const group=getProductOptionSets().find(g=>g.key===key);
+  return group.choices.find(c=>c.value===selected[key]);
 }
 function dimensions(){
   if (currentProduct.category === "colchones") return {width:Number(selected.width),depth:Number(selected.length),pass:70,clearW:10,clearD:10,label:"Colchón " + selected.width + " × " + selected.length + " cm"};
   if (currentProduct.category === "sofas"){
     const width = Number(selected.format);
-    const depth = width === 260 ? 160 : 95;
-    return {width:width,depth:depth,pass:width === 260 ? 90 : 85,clearW:20,clearD:10,label:"Sofá " + width + " × " + depth + " cm"};
+    const chaise = currentProduct.id === "esquina";
+    const depth = chaise ? 160 : 95;
+    return {width:width,depth:depth,pass:chaise ? 90 : 85,clearW:20,clearD:10,label:"Sofá " + width + " × " + depth + " cm"};
   }
   const electric = selected.motion === "electric";
   return {width:electric ? 85 : 82,depth:electric ? 175 : 165,pass:78,clearW:20,clearD:10,label:"Relax desplegado " + (electric ? 85 : 82) + " × " + (electric ? 175 : 165) + " cm"};
 }
 function manufacturable(){
   if (currentProduct.id === "nube" && selected.width === "180" && selected.length === "200") return false;
-  if (currentProduct.id === "lino" && selected.format === "260") return false;
   if (currentProduct.id === "aura" && selected.motion === "electric" && selected.finish === "piel") return false;
   return true;
 }
@@ -154,7 +157,7 @@ function updateQuote(){
   const fabricated = manufacturable();
   const postcode = postcodeState($("#postcode").value.trim());
   const shipping = postcode.status === "ok" ? ({colchones:postcode.local ? 39 : 69,sofas:postcode.local ? 69 : 119,relax:postcode.local ? 59 : 89})[currentProduct.category] : null;
-  const extras = optionSets[currentProduct.category].reduce((sum,group) => sum + getChoice(group.key).extra,0);
+  const extras = getProductOptionSets().reduce((sum,group) => sum + getChoice(group.key).extra,0);
   const item = currentProduct.base + extras;
   const accessories = getSelectedAccessories();
   const complementTotal = accessories.reduce((sum,a)=>sum+a.price,0);
@@ -175,8 +178,8 @@ function updateQuote(){
   $("#add-to-cart").disabled = !ready;
   $("#config-action-hint").textContent = ready ? "Total y entrega calculados solo para esta demostración." : "Revisa las medidas y los avisos de envío para continuar.";
   currentQuote = ready ? {
-    productId:currentProduct.id,name:currentProduct.name,art:currentProduct.art,
-    options:optionSets[currentProduct.category].map((g) => getChoice(g.key).label).join(" · ") + (accessories.length ? " · Complementos: " + accessories.map(a=>a.name).join(", ") : ""),
+    productId:currentProduct.id,name:currentProduct.name,art:currentProduct.art,imageSrc:currentProductVisual().src,visualSimulated:currentProductVisual().simulated,
+    options:getProductOptionSets().map((g) => getChoice(g.key).label).join(" · ") + (accessories.length ? " · Complementos: " + accessories.map(a=>a.name).join(", ") : ""),
     item:item,shipping:shipping,complements:complementTotal,total:total
   } : null;
   updateProductSummary({dim,item,shipping,total,complementTotal,ready,postcode});
@@ -187,8 +190,8 @@ function openConfig(id,fromRoute=false){
   if (activeModal) hideModal(false);
   currentDetails = window.DormiZenProductDetails[id];
   selectedAccessoryIds.clear();
-  selected = Object.fromEntries(optionSets[currentProduct.category].map((g) => [g.key,g.choices[0].value]));
-  $("#config-title").textContent = "Configura " + currentProduct.name;
+  selected = Object.fromEntries(getProductOptionSets().map((g) => [g.key,g.choices[0].value]));
+  $("#config-title").textContent = "Elige tu opción";
   $("#config-product").innerHTML = '<div class="config-thumb ' + artClass(currentProduct) + '" role="img" aria-label="Fotografía oficial de referencia, no del producto ficticio"></div><div><span>' + categoryNames[currentProduct.category] + ' · EJEMPLO</span><h3>' + currentProduct.name + '</h3><p>' + currentProduct.featured + '</p></div>';
   $("#room-width").value = 300;
   $("#room-depth").value = 260;
@@ -208,7 +211,7 @@ function renderCart(){
     return;
   }
   $("#cart-items").innerHTML = cart.map((item,index) =>
-    '<div class="cart-item"><div class="cart-thumb product-art art-' + item.art + '" role="img" aria-label="Fotografía oficial de referencia, no del producto ficticio"></div><div class="cart-item-main"><h3>' + item.name + '</h3><p>' + item.options + '</p><strong>' + money.format(item.total) + ' · total ilustrativo</strong><br><button type="button" class="cart-remove" data-remove="' + index + '">Quitar</button></div></div>'
+    '<div class="cart-item"><div class="cart-thumb"><img src="' + item.imageSrc + '" alt="' + item.name + (item.visualSimulated ? ' · color simulado' : '') + '"></div><div class="cart-item-main"><h3>' + item.name + '</h3><p>' + item.options + '</p><strong>' + money.format(item.total) + ' · total ilustrativo</strong><br><button type="button" class="cart-remove" data-remove="' + index + '">Quitar</button></div></div>'
   ).join("");
 }
 function showAdvisor(advice){
@@ -223,101 +226,6 @@ function showAdvisor(advice){
   $("#advisor-response").innerHTML = '<div class="advisor-response-text"><strong>' + pick.title + '</strong><br>' + pick.text + '</div><button type="button" class="recommend-link" data-open-product="' + pick.id + '">Configurar el ejemplo recomendado ↗</button>';
 }
 
-function viewerStatus(message, error = false){
-  $("#viewer-loading").hidden = !message || error;
-  $("#viewer-error").hidden = !error;
-  if (!error && message) $("#viewer-loading").textContent = message;
-  if (error) $("#viewer-error").textContent = message;
-}
-function reset3DView(){
-  const viewer = $("#sample-model");
-  viewer.cameraOrbit = window.innerWidth <= 490 ? "30deg 70deg 105%" : window.innerWidth <= 760 ? "30deg 70deg 95%" : "30deg 70deg 82%";
-  viewer.cameraTarget = "auto auto auto";
-  viewer.fieldOfView = "auto";
-  if (typeof viewer.jumpCameraToGoal === "function") viewer.jumpCameraToGoal();
-}
-function renderViewerVariants(){
-  const wrap = $("#viewer-variants");
-  const options = $("#viewer-variant-options");
-  const viewer = $("#sample-model");
-  options.replaceChildren();
-  const variants = selectedViewerModel === "sofa" && Array.isArray(viewer.availableVariants) ? viewer.availableVariants : [];
-  if (!variants.length){wrap.hidden = true;return;}
-  const labels = {Black:"Negro",Champagne:"Champán",Gray:"Gris",Navy:"Azul marino","Pale Pink":"Rosa pálido"};
-  variants.forEach((name) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.variant = name;
-    button.textContent = labels[name] || name;
-    button.setAttribute("aria-pressed","false");
-    options.append(button);
-  });
-  wrap.hidden = false;
-}
-function createModelViewer(){
-  const viewer = document.createElement("model-viewer");
-  viewer.id = "sample-model";
-  for (const [name,value] of Object.entries({
-    "camera-controls":"","touch-action":"pan-y","disable-pan":"",
-    "shadow-intensity":"0.9","shadow-softness":"0.8",
-    "environment-image":"neutral","exposure":"1",
-    "min-field-of-view":"20deg","loading":"eager",
-    "interaction-prompt":"none"
-  })) viewer.setAttribute(name,value);
-  viewer.addEventListener("load",() => {
-    if ($("#sample-model") !== viewer) return;
-    if (viewerLoadTimer) clearTimeout(viewerLoadTimer);
-    viewerLoadTimer = null;
-    viewerStatus("");
-    renderViewerVariants();
-  });
-  viewer.addEventListener("error",() => {
-    if ($("#sample-model") !== viewer) return;
-    if (viewerLoadTimer) clearTimeout(viewerLoadTimer);
-    viewerLoadTimer = null;
-    viewerStatus("No se pudo cargar este modelo 3D. Prueba otro modelo o vuelve al catálogo ilustrativo.",true);
-  });
-  return viewer;
-}
-function selectViewerModel(key){
-  const model = viewerModels[key];
-  if (!model) return;
-  selectedViewerModel = key;
-  $$("#viewer-panel [data-model]").forEach((button) => {
-    const active = button.dataset.model === key;
-    button.classList.toggle("active",active);
-    button.setAttribute("aria-pressed",String(active));
-  });
-  $("#viewer-variants").hidden = true;
-  $("#viewer-credit").innerHTML = model.credit;
-  viewerStatus("Cargando " + (key === "sofa" ? "sofá" : "sillón") + " 3D de muestra…");
-  const previous = $("#sample-model");
-  const viewer = createModelViewer();
-  previous.replaceWith(viewer);
-  viewer.alt = model.alt;
-  viewer.src = model.src;
-  reset3DView();
-  if (viewerLoadTimer) clearTimeout(viewerLoadTimer);
-  viewerLoadTimer = setTimeout(() => {
-    if (!$("#viewer-loading").hidden && selectedViewerModel === key){
-      viewerStatus("Este modelo está tardando demasiado en cargar. Prueba de nuevo más tarde o sigue con el catálogo ilustrativo.",true);
-    }
-  },20000);
-}
-function open3DViewer(key = "sofa"){
-  const requested = viewerModels[key] ? key : "sofa";
-  openModal("viewer-panel");
-  if (!viewerModulePromise) viewerModulePromise = import("./vendor/model-viewer.min.js");
-  viewerModulePromise.then(() => customElements.whenDefined("model-viewer")).then(() => {
-    if (!viewerInitialized){viewerInitialized = true;selectViewerModel(requested);}
-    else if (selectedViewerModel !== requested) selectViewerModel(requested);
-    else reset3DView();
-  }).catch(() => {
-    viewerModulePromise = null;
-    viewerStatus("El visor 3D no se pudo cargar. El resto del prototipo sigue disponible.",true);
-  });
-}
-$("#viewer-reset").addEventListener("click",reset3DView);
 
 const quickExamples = {
   nube:{width:90,depth:190,pass:70,clearW:10,clearD:10,name:"colchón 90 × 190 cm"},
@@ -373,8 +281,6 @@ document.addEventListener("click",(event) => {
   if (filter){showHomePage();setFilter(filter.dataset.filter);return;}
   const homeLink = event.target.closest('a[href^="#"]');
   if(homeLink && ["#inicio","#catalogo","#como-funciona","#experiencias","#quick-fit"].includes(homeLink.getAttribute("href"))) showHomePage();
-  const viewerEntry = event.target.closest("[data-open-viewer]");
-  if (viewerEntry){open3DViewer(viewerEntry.dataset.openViewer);return;}
   const openProduct = event.target.closest("[data-open-product]");
   if (openProduct){event.preventDefault();openConfig(openProduct.dataset.openProduct);if (openProduct.hasAttribute("data-copy-fit")){copyQuickFitToConfig();scrollProductConfig();}return;}
   if (event.target.closest("[data-close]")){hideModal();return;}
@@ -382,23 +288,14 @@ document.addEventListener("click",(event) => {
   if (remove){cart.splice(Number(remove.dataset.remove),1);renderCart();return;}
   const advice = event.target.closest("[data-advice]");
   if (advice){showAdvisor(advice.dataset.advice);return;}
-  const model = event.target.closest("#viewer-panel [data-model]");
-  if (model){selectViewerModel(model.dataset.model);return;}
-  const variant = event.target.closest("#viewer-variant-options [data-variant]");
-  if (variant){
-    $("#sample-model").variantName = variant.dataset.variant;
-    $$("#viewer-variant-options button").forEach((button) => {
-      const active = button === variant;
-      button.classList.toggle("active",active);
-      button.setAttribute("aria-pressed",String(active));
-    });
-  }
 });
 $("#product-options").addEventListener("click",(event) => {
   const button = event.target.closest("[data-option]");
   if (!button) return;
   selected[button.dataset.option] = button.dataset.value;
   renderOptions();
+  document.querySelector('[data-option="'+button.dataset.option+'"][data-value="'+button.dataset.value+'"]').focus({preventScroll:true});
+  syncProductGallery();
   updateQuote();
 });
 ["#room-width","#room-depth","#door-width","#postcode"].forEach((id) => {
@@ -408,7 +305,6 @@ $("#product-options").addEventListener("click",(event) => {
   });
 });
 $("#cart-trigger").addEventListener("click",() => {renderCart();openModal("cart-panel");});
-$("#open-viewer").addEventListener("click",() => open3DViewer("sofa"));
 $("#open-advisor").addEventListener("click",() => openModal("advisor-panel"));
 $("#add-to-cart").addEventListener("click",() => {
   updateQuote();
