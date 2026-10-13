@@ -13,6 +13,10 @@ Propuesta independiente de tienda online para presentar a DormiZen. **No es la t
 - La portada y el chequeo rápido permiten explorar las tres categorías y revisar espacio, paso y código postal. El resultado siempre requiere verificación humana; no puede certificar la entrada de un bulto real.
 - `admin/` contiene un administrador conceptual navegable. No autentica, guarda, publica ni se conecta a sistemas reales.
 
+## Proyecto comercial
+
+La tienda operativa, el backend y el administrador serán un desarrollo a medida. Plazo de entrega: **4–5 semanas desde el inicio acordado**, con alcance y datos aprobados. El presupuesto de la presentación conserva celdas vacías para que el responsable complete los importes. El posicionamiento continuará después del lanzamiento. Este repositorio solo contiene el demo estático.
+
 ## Abrir
 
 Publicar la carpeta completa en GitHub Pages con sus subcarpetas assets/ y vendor/. Las rutas son relativas y no requieren compilación. Para previsualizarla en local, iniciar un servidor HTTP desde esta carpeta (por ejemplo, `python -m http.server 8000`) y visitar `http://localhost:8000/`. El prototipo no requiere servidor de aplicación, base de datos ni servicios externos.

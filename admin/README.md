@@ -14,13 +14,18 @@ Las imágenes y el logo se reutilizan desde la carpeta superior del demo y tiene
 
 ## Arquitectura para la tienda real
 
-Recomendación preliminar: utilizar una plataforma de comercio con administración existente y desarrollar únicamente el módulo de configuración y entrega para las reglas de fabricación, precio y entrega. WooCommerce es una opción provisional con un tema propio y un plugin propio; confirmar en descubrimiento con el volumen de catálogo, la operativa y el presupuesto. La validación de las reglas tendría que ocurrir en el servidor, tanto al configurar como al pasar por carrito y pago, y quedar registrada con cada pedido. GitHub Pages solo aloja esta maqueta estática.
+Desarrollo a medida de la tienda, el backend y el administrador propio. El sistema compartirá catálogo, variantes, precios, inventario, pedidos, promociones y permisos mediante una API y una base de datos. El administrador real tendrá autenticación y roles; las validaciones de fabricación, disponibilidad, configuración, precio y entrega se ejecutarán en el servidor al configurar y antes del pago, y se registrarán con cada pedido.
 
-Fuentes oficiales consultadas:
-- WooCommerce: https://woocommerce.com/document/variable-product/
-- WooCommerce: https://woocommerce.com/document/setting-up-shipping-zones/
-- WooCommerce: https://woocommerce.com/document/managing-orders/
-- WooCommerce: https://woocommerce.com/document/roles-capabilities/
-- WooCommerce Store API: https://developer.woocommerce.com/docs/category/store-api
-- Shopify, límites de variantes: https://help.shopify.com/en/manual/products/variants/add-variants
-- PrestaShop, funciones del panel: https://docs.prestashop-project.org/v.8-documentation/user-guide
+El proyecto se entregará en 4–5 semanas desde el inicio acordado. El catálogo, las imágenes, las combinaciones y las tarifas deberán estar disponibles para cumplir el calendario. Las integraciones y el alcance final se cerrarán en la primera semana. GitHub Pages seguirá alojando exclusivamente estos prototipos estáticos; la tienda operativa necesitará alojamiento para el backend y la base de datos.
+
+## Calendario de entrega
+
+| Semana | Trabajo y resultado |
+| --- | --- |
+| 1 | Definición, UX/UI, catálogo y reglas aprobadas. |
+| 2 | Fichas, variantes y gestión de catálogo en el administrador propio. |
+| 3 | Carrito, checkout, pedidos, configuración y entrega por código postal. |
+| 4 | Pruebas, SEO técnico, medición y preparación del lanzamiento. |
+| 5, si se necesita | Ajustes, formación, lanzamiento y entrega final. |
+
+El posicionamiento se prepara durante el desarrollo y se trabaja después del lanzamiento. El 3D solo se activará para referencias con modelos coincidentes y aprobados.
