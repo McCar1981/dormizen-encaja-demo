@@ -15,7 +15,7 @@ Propuesta independiente de tienda online para presentar a DormiZen. **No es la t
 
 ## Proyecto comercial
 
-La tienda operativa, el backend y el administrador serán un desarrollo a medida. Plazo de entrega: **4–5 semanas desde el inicio acordado**, con alcance y datos aprobados. El presupuesto de la presentación conserva celdas vacías para que el responsable complete los importes. El posicionamiento continuará después del lanzamiento. Este repositorio solo contiene el demo estático.
+La tienda operativa, el backend y el administrador serán un desarrollo a medida. Plazo de entrega: **1 mes desde el inicio acordado**, con alcance y datos aprobados. La propuesta de desarrollo y SEO inicial es única: 4.750 € + IVA. Anticipo del 50 % (2.375 € + IVA) y saldo en tres cuotas mensuales posteriores a la entrega: 791,66 €, 791,66 € y 791,68 €, más IVA. La última cuota ajusta el redondeo de 0,02 €. El servicio posterior se propone por 450 € + IVA al mes desde el cuarto mes tras la entrega, una vez terminadas las tres cuotas: mantenimiento web, optimización SEO continua, informes y activación y gestión de Google Ads. La inversión publicitaria se paga aparte. El inicio y la periodicidad de este servicio están pendientes de confirmación por el responsable de la propuesta. El posicionamiento continuará después del lanzamiento. Este repositorio solo contiene el demo estático.
 
 ## Abrir
 

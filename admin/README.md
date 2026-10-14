@@ -16,7 +16,7 @@ Las imágenes y el logo se reutilizan desde la carpeta superior del demo y tiene
 
 Desarrollo a medida de la tienda, el backend y el administrador propio. El sistema compartirá catálogo, variantes, precios, inventario, pedidos, promociones y permisos mediante una API y una base de datos. El administrador real tendrá autenticación y roles; las validaciones de fabricación, disponibilidad, configuración, precio y entrega se ejecutarán en el servidor al configurar y antes del pago, y se registrarán con cada pedido.
 
-El proyecto se entregará en 4–5 semanas desde el inicio acordado. El catálogo, las imágenes, las combinaciones y las tarifas deberán estar disponibles para cumplir el calendario. Las integraciones y el alcance final se cerrarán en la primera semana. GitHub Pages seguirá alojando exclusivamente estos prototipos estáticos; la tienda operativa necesitará alojamiento para el backend y la base de datos.
+El proyecto se entregará en 1 mes desde el inicio acordado. El catálogo, las imágenes, las combinaciones y las tarifas deberán estar disponibles para cumplir el calendario. Las integraciones y el alcance final se cerrarán en la primera semana. GitHub Pages seguirá alojando exclusivamente estos prototipos estáticos; la tienda operativa necesitará alojamiento para el backend y la base de datos.
 
 ## Calendario de entrega
 
@@ -25,7 +25,6 @@ El proyecto se entregará en 4–5 semanas desde el inicio acordado. El catálog
 | 1 | Definición, UX/UI, catálogo y reglas aprobadas. |
 | 2 | Fichas, variantes y gestión de catálogo en el administrador propio. |
 | 3 | Carrito, checkout, pedidos, configuración y entrega por código postal. |
-| 4 | Pruebas, SEO técnico, medición y preparación del lanzamiento. |
-| 5, si se necesita | Ajustes, formación, lanzamiento y entrega final. |
+| 4 | Pruebas, SEO técnico, medición, ajustes, formación, lanzamiento y entrega final. |
 
-El posicionamiento se prepara durante el desarrollo y se trabaja después del lanzamiento. El 3D solo se activará para referencias con modelos coincidentes y aprobados.
+La propuesta técnica es única e incluye la tienda, el backend, el administrador propio, las reglas de compra y entrega, la preparación SEO inicial, el visor 3D y el asesor digital. El 3D solo se activa para referencias con modelos coincidentes y aprobados; el asesor necesita información validada del catálogo. El prototipo mantiene fotos y simulaciones de ejemplo y no se conecta a ventas reales.
