@@ -17,6 +17,10 @@ Propuesta independiente de tienda online para presentar a DormiZen. **No es la t
 
 La tienda operativa, el backend y el administrador serán un desarrollo a medida. Plazo de entrega: **1 mes desde el inicio acordado**, con alcance y datos aprobados. La propuesta de desarrollo y SEO inicial es única: 4.750 € + IVA. Anticipo del 50 % (2.375 € + IVA) y saldo en tres cuotas mensuales posteriores a la entrega: 791,66 €, 791,66 € y 791,68 €, más IVA. La última cuota ajusta el redondeo de 0,02 €. El servicio posterior se propone por 450 € + IVA al mes desde el cuarto mes tras la entrega, una vez terminadas las tres cuotas: mantenimiento web, optimización SEO continua, informes y activación y gestión de Google Ads. La inversión publicitaria se paga aparte. El inicio y la periodicidad de este servicio están pendientes de confirmación por el responsable de la propuesta. El posicionamiento continuará después del lanzamiento. Este repositorio solo contiene el demo estático.
 
+## Referencia de calidad visual
+
+`3d-realista.html` recupera los modelos texturizados del visor anterior como muestra independiente. El sofá y el sillón son de terceros, con créditos y licencias visibles. No se insertan en las fichas de DormiZen. La portada enlaza esta referencia para enseñar calidad de materiales, giro, zoom y acabados; el catálogo real necesitará modelos aprobados por referencia.
+
 ## Visor 3D
 
 En las cuatro fichas de muebles, pulsa **Ver en 3D** sobre la foto o **Vista 3D** en las miniaturas. Cambia el color del sofá desde su configurador y gira el objeto para observarlo. El parámetro `?vista=3d#producto/lino` abre directamente el modelo de esa ficha. Los GLB se cargan solo al abrir el visor. Las medidas, tejidos y mecanismos son orientativos; los sillones muestran una posición fija y no animan el mecanismo.
