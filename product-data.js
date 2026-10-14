@@ -1,7 +1,7 @@
 "use strict";
-// Catálogo conceptual. Una imagen asignada por ficha; los recortes usan el mismo archivo.
-// Las variantes marcadas simulated son vistas IA orientativas del mismo mueble.
-// No hay modelos 3D aprobados para estas referencias. Precios y reglas son ficticios.
+// Catálogo conceptual: foto asignada, simulaciones de color y modelos reconstruidos orientativos.
+// Cada reconstrucción pertenece únicamente a la referencia visual indicada; no tiene aprobación comercial.
+// Colchones no ofrecen 3D porque no hay una referencia aislada coincidente. Precios y reglas ficticios.
 window.DormiZenProductDetails = {
   "nube": {
     "intro": "Compara medidas y firmeza para tu dormitorio.",
@@ -193,7 +193,13 @@ window.DormiZenProductDetails = {
     ],
     "deliveryNote": "Introduce el código postal para calcular transporte y plazo de ejemplo. Montaje, embalajes y accesos requieren confirmación con DormiZen.",
     "care": "Sigue las instrucciones del tejido y del fabricante. Composición, cuidados y condiciones comerciales pendientes de validar por referencia.",
-    "model3d": null,
+    "model3d": {
+      "src": "assets/models/Lino-concept.glb",
+      "baseWidth": 180,
+      "baseDepth": 95,
+      "pose": "",
+      "conceptual": true
+    },
     "colors": [
       {
         "value": "rosa",
@@ -275,7 +281,13 @@ window.DormiZenProductDetails = {
     ],
     "deliveryNote": "Introduce el código postal para calcular transporte y plazo de ejemplo. Montaje, embalajes y accesos requieren confirmación con DormiZen.",
     "care": "Sigue las instrucciones del tejido y del fabricante. Composición, cuidados y condiciones comerciales pendientes de validar por referencia.",
-    "model3d": null,
+    "model3d": {
+      "src": "assets/models/Esquina-concept.glb",
+      "baseWidth": 260,
+      "baseDepth": 160,
+      "pose": "",
+      "conceptual": true
+    },
     "colors": [
       {
         "value": "marfil",
@@ -353,7 +365,13 @@ window.DormiZenProductDetails = {
     ],
     "deliveryNote": "Introduce el código postal para calcular transporte y plazo de ejemplo. Montaje, embalajes y accesos requieren confirmación con DormiZen.",
     "care": "Sigue las instrucciones del tejido y del fabricante. Composición, cuidados y condiciones comerciales pendientes de validar por referencia.",
-    "model3d": null
+    "model3d": {
+      "src": "assets/models/Aura-concept.glb",
+      "baseWidth": 82,
+      "baseDepth": 95,
+      "pose": "Reposapiés recogido",
+      "conceptual": true
+    }
   },
   "terra": {
     "intro": "Un relax de presencia cálida para tu momento de descanso.",
@@ -413,6 +431,12 @@ window.DormiZenProductDetails = {
     ],
     "deliveryNote": "Introduce el código postal para calcular transporte y plazo de ejemplo. Montaje, embalajes y accesos requieren confirmación con DormiZen.",
     "care": "Sigue las instrucciones del tejido y del fabricante. Composición, cuidados y condiciones comerciales pendientes de validar por referencia.",
-    "model3d": null
+    "model3d": {
+      "src": "assets/models/Terra-concept.glb",
+      "baseWidth": 82,
+      "baseDepth": 165,
+      "pose": "Reposapiés abierto",
+      "conceptual": true
+    }
   }
 };

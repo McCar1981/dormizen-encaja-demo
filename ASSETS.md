@@ -19,6 +19,19 @@ Las fotos cama001 y cama002 muestran camas completas y no un colchón aislado. N
 **Portada actual:** `assets/cama001.jpg` procede de la web de DormiZen y se muestra solo como referencia visual de categoría. No representa el producto ficticio ni el precio del configurador. `assets/hero.webp` fue una imagen generada para una versión anterior y ya no se muestra en el demo.
 
 
+## Modelos 3D propios vinculados a la ficha
+
+Desde el 14 de octubre de 2026, Lino, Esquina, Aura y Terra tienen un GLB propio, asociado solo a su referencia visual. Son reconstrucciones geométricas orientativas hechas en código (Three.js y GLTFExporter), con superficies acolchadas, costuras, patas y texturas procedimentales propias. No son imágenes planas giradas, no incrustan las fotografías y no son modelos de otros fabricantes. Las partes no visibles, las medidas y los materiales se aproximan y requieren validación con el producto físico antes de una tienda real.
+
+| Modelo | Fotografía de referencia | Posición representada |
+| --- | --- | --- |
+| assets/models/Lino-concept.glb | assets/sofa014.jpg | Sofá de dos asientos y respaldo dividido |
+| assets/models/Esquina-concept.glb | assets/sofa024.jpg | Chaise a la izquierda de la vista frontal |
+| assets/models/Aura-concept.glb | assets/relax004.jpg | Reposapiés recogido; pie metálico de cuatro radios |
+| assets/models/Terra-concept.glb | assets/relax007.jpg | Reposapiés abierto |
+
+El visor carga únicamente el GLB asignado a la ficha. Permite giro, zoom, restablecer vista y ampliar. El cambio de color de los sofás recolorea el tapizado y conserva patas y estructura. Cambiar ancho actualiza el precio y el esquema 2D; la geometría 3D mantiene la forma de la referencia base. Los cambios de rugosidad del tejido son orientativos y no acreditan variantes fabricables. Los mecanismos relax no están animados. Los colchones no ofrecen 3D porque las fotografías disponibles muestran ambientes con camas, sin una referencia aislada suficiente del colchón.
+
 ## Archivo de modelos 3D de una versión anterior
 
 El visor de muestra se ha retirado de la tienda el 12 de octubre de 2026. No existe un modelo aprobado que coincida con las fotos de cada ficha. Estos archivos no se cargan ni se ofrecen en la interfaz actual. Se conservan dos archivos GLB locales de [Khronos glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). Ambos se presentan expresamente como **modelos de muestra ajenos a DormiZen**. No identifican ningún artículo, medida, mecanismo, opción ni precio de las fichas ilustrativas. Los archivos GLB no se han modificado.
@@ -28,13 +41,13 @@ El visor de muestra se ha retirado de la tienda el 12 de octubre de 2026. No exi
 | assets/models/GlamVelvetSofa.glb | https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/GlamVelvetSofa/glTF-Binary/GlamVelvetSofa.glb | © 2021 Wayfair, LLC; Eric Chadwick. [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). [Licencia del modelo](https://github.com/KhronosGroup/glTF-Sample-Assets/blob/main/Models/GlamVelvetSofa/LICENSE.md). Es un modelo de un producto Wayfair, no DormiZen. |
 | assets/models/SheenChair.glb | https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/SheenChair/glTF-Binary/SheenChair.glb | © 2020 Wayfair, LLC; Eric Chadwick. [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). [Licencia del modelo](https://github.com/KhronosGroup/glTF-Sample-Assets/blob/main/Models/SheenChair/LICENSE.md). Sillón genérico sin mecanismo relax. |
 
-El componente local `vendor/model-viewer.min.js` procede de `@google/model-viewer@4.3.1`: https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js . Su licencia [Apache 2.0](https://github.com/google/model-viewer/blob/master/LICENSE) se conserva en `vendor/model-viewer.LICENSE.txt`. El paquete y los GLB no se importan en la versión actual.
+El componente local `vendor/model-viewer.min.js` procede de `@google/model-viewer@4.3.1`: https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js . Su licencia [Apache 2.0](https://github.com/google/model-viewer/blob/master/LICENSE) se conserva en `vendor/model-viewer.LICENSE.txt`. Los GLB de terceros no se importan en la versión actual. El componente model-viewer se importa de forma diferida al abrir uno de los cuatro modelos propios.
 
-Ninguna ficha tiene un modelo 3D coincidente aprobado. Para una tienda definitiva habría que obtener o producir modelos de cada producto real y confirmar sus derechos, medidas, materiales y comportamiento.
+Ninguna reconstrucción del demo tiene aprobación comercial del fabricante. Para una tienda definitiva habría que obtener o producir modelos de cada producto real y confirmar sus derechos, medidas, materiales y comportamiento.
 
 ## Fichas y venta asociada del prototipo
 
-Cada ficha usa exclusivamente la fotografía que tiene asignada, un recorte visual de esa misma imagen y un esquema 2D. Nunca incorpora la fotografía de otra referencia como ángulo de la ficha. Las imágenes originales no verifican el nombre, las medidas ni las opciones ficticias del catálogo. Las medidas 2D se dibujan en SVG con reglas ilustrativas del configurador; no son planos técnicos ni modelos 3D.
+Cada ficha usa exclusivamente la fotografía que tiene asignada, un recorte visual de esa misma imagen y un esquema 2D. Nunca incorpora la fotografía de otra referencia como ángulo de la ficha. Las imágenes originales no verifican el nombre, las medidas ni las opciones ficticias del catálogo. Las medidas 2D se dibujan en SVG con reglas ilustrativas del configurador; no son planos técnicos. Las cuatro reconstrucciones GLB del demo son volumétricas y orientativas, como se detalla arriba.
 
 Las ilustraciones SVG de complementos son iconos de concepto creados en código. Los accesorios, sus precios y la asociación a cada familia son ejemplos ficticios; no existe compatibilidad real confirmada.
 ## Colores y telas: vista conceptual

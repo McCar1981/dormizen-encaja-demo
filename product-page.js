@@ -26,24 +26,32 @@ function renderProductDetails(product){
   $("#pdp-care").textContent=data.care;
   $("#pdp-related-grid").innerHTML=data.related.map(productById).filter(Boolean).map(productCard).join("");
   $("#pdp-cross-grid").innerHTML=data.accessories.map(a=>'<article class="cross-card">'+accessoryIllustration(a)+'<small>ILUSTRACIÓN DE CONCEPTO · ACCESORIO FICTICIO</small><h3>'+escapeProductText(a.name)+'</h3><p>'+escapeProductText(a.description)+'</p><strong>'+money.format(a.price)+' <small>Precio ilustrativo · IVA incluido</small></strong><label><input type="checkbox" data-accessory="'+a.id+'"> Incluir en mi selección</label></article>').join("");
+  window.DormiZen3D.hide();
+  $("#pdp-launch-3d").hidden=!data.model3d;
   productGalleryIndex=0;
   syncProductGallery();
 }
 function syncProductGallery(){
   const visual=currentProductVisual();
-  $("#pdp-thumbnails").innerHTML=currentDetails.gallery.map((g,index)=>'<button type="button" data-gallery="'+index+'" aria-label="'+escapeProductText(g.label)+'" aria-pressed="false"><span class="pdp-thumb-frame"><img class="'+(g.crop?'is-detail':'')+'" src="'+visual.src+'" alt=""></span><span>'+g.label+'</span></button>').join("")+'<button type="button" data-gallery="measures" aria-label="Ver medidas de ejemplo" aria-pressed="false"><span aria-hidden="true">↔</span><span>Medidas</span></button>';
+  $("#pdp-thumbnails").innerHTML=currentDetails.gallery.map((g,index)=>'<button type="button" data-gallery="'+index+'" aria-label="'+escapeProductText(g.label)+'" aria-pressed="false"><span class="pdp-thumb-frame"><img class="'+(g.crop?'is-detail':'')+'" src="'+visual.src+'" alt=""></span><span>'+g.label+'</span></button>').join("")+'<button type="button" data-gallery="measures" aria-label="Ver medidas de ejemplo" aria-pressed="false"><span aria-hidden="true">↔</span><span>Medidas</span></button>'+(currentDetails.model3d?'<button type="button" data-gallery="3d" class="pdp-3d-thumb" aria-label="Ver modelo 3D de este producto" aria-pressed="false"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 28 10v13l-12 7-12-7V10ZM4 10l12 7 12-7M16 17v13M10 7l12 7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Vista 3D</span></button>':'');
   selectProductGallery(productGalleryIndex);
 }
 function selectProductGallery(index){
   productGalleryIndex=index;
   const measures=index==="measures";
+  const is3d=index==="3d" && !!currentDetails.model3d;
   const image=$("#pdp-main-image");
-  image.hidden=measures;
+  image.hidden=measures||is3d;
   $("#pdp-measure-diagram").hidden=!measures;
-  $("#pdp-zoom").hidden=measures;
+  $("#pdp-zoom").hidden=measures||is3d;
+  $("#pdp-launch-3d").hidden=is3d||measures||!currentDetails.model3d;
+  if(!is3d)window.DormiZen3D.hide();
   const badge=$("#pdp-visual-badge");
   badge.hidden=true;
-  if(measures){
+  if(is3d){
+    $("#pdp-media-caption").textContent="Reconstrucción 3D orientativa de esta referencia visual"+(currentDetails.model3d.pose?" · "+currentDetails.model3d.pose.toLowerCase():"")+". Geometría y acabados sin validación comercial.";
+    window.DormiZen3D.show(currentDetails.model3d);
+  }else if(measures){
     updateProductDiagram(dimensions());
     $("#pdp-media-caption").textContent="Esquema 2D orientativo · medidas de la configuración de ejemplo.";
   }else{
@@ -76,6 +84,7 @@ function updateProductSummary(quote){
   $("#pdp-mobile-label").textContent=quote.total===null?"Selección · transporte pendiente":quote.ready?"Total ilustrativo · IVA incluido":"Total ilustrativo · revisa medidas y envío";
   $("#pdp-mobile-buy").textContent=pdpHasReviewedConfig?(quote.ready?"Añadir al carrito":"Revisar datos"):"Ver opciones";
   if(productGalleryIndex==="measures") updateProductDiagram(quote.dim);
+  if(productGalleryIndex==="3d")window.DormiZen3D.sync();
 }
 function activateProductPage(id,fromRoute){
   $("#inicio").hidden=true;$("#product-detail").hidden=false;
@@ -85,9 +94,11 @@ function activateProductPage(id,fromRoute){
   if(!fromRoute && location.hash!=="#producto/"+id)history.pushState({product:id},"","#producto/"+id);
   window.scrollTo({top:0,behavior:"instant"});
   $("#pdp-title").focus({preventScroll:true});
+  if(new URLSearchParams(location.search).get("vista")==="3d" && currentDetails.model3d)selectProductGallery("3d");
 }
 function showHomePage(){
   if(!$("#product-detail") || $("#product-detail").hidden)return;
+  window.DormiZen3D.hide();
   $("#product-detail").hidden=true;$("#inicio").hidden=false;
   document.body.classList.remove("product-view");
   document.title="DormiZen · Tienda online · Prototipo conceptual";
@@ -103,7 +114,8 @@ function handleProductRoute(){
     openConfig(match[1],true);
   }else showHomePage();
 }
-$("#pdp-thumbnails").addEventListener("click",event=>{const button=event.target.closest("[data-gallery]");if(button)selectProductGallery(button.dataset.gallery==="measures"?"measures":Number(button.dataset.gallery));});
+$("#pdp-thumbnails").addEventListener("click",event=>{const button=event.target.closest("[data-gallery]");if(button)selectProductGallery(["measures","3d"].includes(button.dataset.gallery)?button.dataset.gallery:Number(button.dataset.gallery));});
+$("#pdp-launch-3d").addEventListener("click",()=>selectProductGallery("3d"));
 $("#pdp-zoom").addEventListener("click",()=>{const image=$("#pdp-main-image");$("#pdp-zoom-image").src=image.src;$("#pdp-zoom-image").alt=image.alt;$("#pdp-zoom-image").classList.toggle("is-detail",image.classList.contains("is-detail"));$("#pdp-zoom-caption").textContent=$("#pdp-media-caption").textContent;openModal("photo-panel");});
 $("#pdp-cross-grid").addEventListener("change",event=>{const input=event.target.closest("[data-accessory]");if(!input)return;if(input.checked)selectedAccessoryIds.add(input.dataset.accessory);else selectedAccessoryIds.delete(input.dataset.accessory);updateQuote();});
 document.addEventListener("click",event=>{if(event.target.closest("[data-scroll-config]"))scrollProductConfig();});

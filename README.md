@@ -6,7 +6,7 @@ Propuesta independiente de tienda online para presentar a DormiZen. **No es la t
 - Las seis fichas se abren como páginas completas con URL `#producto/nube`, `#producto/origen`, `#producto/lino`, `#producto/esquina`, `#producto/aura` y `#producto/terra`. Incluyen galería, ampliación, detalles, medidas 2D de ejemplo, configuración integrada y productos relacionados.
 - El configurador comprueba medidas, un paso mínimo y códigos postales peninsulares mediante reglas de muestra. Los complementos ficticios seleccionados se suman al total y aparecen asociados al producto en el carrito.
 - El carrito y la confirmación funcionan solo en la memoria del navegador. No se recogen datos personales ni se procesan pagos.
-- Ninguna ficha ofrece 3D: no hay modelos coincidentes aprobados. La galería utiliza una foto asignada por producto, un recorte del mismo archivo y un esquema 2D. El asesor tiene respuestas predefinidas y no usa IA conectada.
+- Lino, Esquina, Aura y Terra ofrecen un visor 3D de geometría propia asociada a su referencia fotográfica, con giro, zoom y ampliación. Son reconstrucciones orientativas, no modelos oficiales ni validados del fabricante. Nube y Origen no ofrecen 3D. La galería conserva la foto asignada, un recorte del mismo archivo y el esquema 2D. El asesor del demo tiene respuestas predefinidas y no usa IA conectada.
 - Los sofás Lino y Esquina permiten cambiar entre foto original y una simulación IA de color del mismo mueble. La imagen y el color seleccionado se reflejan en el carrito. Las telas se comparan mediante texturas CSS orientativas. Ni los colores ni los tejidos representan variantes comerciales confirmadas.
 - La ficha resume los detalles con una frase, iconos y acordeones cerrados. El desplegable de medidas y envío contiene datos iniciales de ejemplo; revísalos antes de completar la simulación.
 - El logo y seis fotografías de referencia provienen de dormizen.com; la portada usa una de esas fotografías como referencia visual de categoría. Véase ASSETS.md para URL y atribución exactas. **Antes de usar estas fotos en una tienda comercial real, hay que confirmar con DormiZen y con los posibles fotógrafos o proveedores los derechos de uso.**
@@ -16,6 +16,10 @@ Propuesta independiente de tienda online para presentar a DormiZen. **No es la t
 ## Proyecto comercial
 
 La tienda operativa, el backend y el administrador serán un desarrollo a medida. Plazo de entrega: **1 mes desde el inicio acordado**, con alcance y datos aprobados. La propuesta de desarrollo y SEO inicial es única: 4.750 € + IVA. Anticipo del 50 % (2.375 € + IVA) y saldo en tres cuotas mensuales posteriores a la entrega: 791,66 €, 791,66 € y 791,68 €, más IVA. La última cuota ajusta el redondeo de 0,02 €. El servicio posterior se propone por 450 € + IVA al mes desde el cuarto mes tras la entrega, una vez terminadas las tres cuotas: mantenimiento web, optimización SEO continua, informes y activación y gestión de Google Ads. La inversión publicitaria se paga aparte. El inicio y la periodicidad de este servicio están pendientes de confirmación por el responsable de la propuesta. El posicionamiento continuará después del lanzamiento. Este repositorio solo contiene el demo estático.
+
+## Visor 3D
+
+En las cuatro fichas de muebles, pulsa **Ver en 3D** sobre la foto o **Vista 3D** en las miniaturas. Cambia el color del sofá desde su configurador y gira el objeto para observarlo. El parámetro `?vista=3d#producto/lino` abre directamente el modelo de esa ficha. Los GLB se cargan solo al abrir el visor. Las medidas, tejidos y mecanismos son orientativos; los sillones muestran una posición fija y no animan el mecanismo.
 
 ## Abrir
 

@@ -282,7 +282,7 @@ document.addEventListener("click",(event) => {
   const homeLink = event.target.closest('a[href^="#"]');
   if(homeLink && ["#inicio","#catalogo","#como-funciona","#experiencias","#quick-fit"].includes(homeLink.getAttribute("href"))) showHomePage();
   const openProduct = event.target.closest("[data-open-product]");
-  if (openProduct){event.preventDefault();openConfig(openProduct.dataset.openProduct);if (openProduct.hasAttribute("data-copy-fit")){copyQuickFitToConfig();scrollProductConfig();}return;}
+  if (openProduct){event.preventDefault();openConfig(openProduct.dataset.openProduct);if(openProduct.hasAttribute("data-show-3d") && currentDetails.model3d)selectProductGallery("3d");if (openProduct.hasAttribute("data-copy-fit")){copyQuickFitToConfig();scrollProductConfig();}return;}
   if (event.target.closest("[data-close]")){hideModal();return;}
   const remove = event.target.closest("[data-remove]");
   if (remove){cart.splice(Number(remove.dataset.remove),1);renderCart();return;}
